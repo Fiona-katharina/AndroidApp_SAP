@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction
 import org.apache.commons.math3.complex.Complex
 import org.apache.commons.math3.fitting.PolynomialCurveFitter
@@ -38,11 +39,11 @@ import kotlin.math.abs
 
 
 class MainActivity : ComponentActivity() {
-    lateinit var Activity:Activities
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { ChangeText(context = this) } }
+        setContent { MaterialTheme { ChangeText(context = this, Activities()) } }
     }
+}
 
     @Composable
     fun Text(t: String) {
@@ -52,7 +53,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun ChangeText(context: Context) {
+    fun ChangeText(context: Context, act:Activities) {
         var text by remember { mutableStateOf("Click a button") }
 
         Column(
@@ -64,11 +65,11 @@ class MainActivity : ComponentActivity() {
             Button(onClick = { text = count_Steps(context) }) {
                 Text("Count steps")
             }
-            Button(onClick = { text = classify_Activity(context) }) {
+            Button(onClick = { text = classify_Activity(context, act) }) {
                 Text("Classify a random Subject")
             }
             LazyColumn() {
-                items(Activity.getActivities()){activity-> Text(activity)}
+                items(act.getActivities()){activity-> Text(activity)}
             }
         }
     }
@@ -79,11 +80,10 @@ class MainActivity : ComponentActivity() {
         return StepCounter.Convert(StepCounter.ReadRaw(context)).toString()
     }
 
-    fun classify_Activity(context: Context): String {
+    fun classify_Activity(context: Context, act:Activities): String {
         val classifier = ActivityClassifier(100)
         classifier.ReadRaw(context)
         val a=classifier.Extract((0..10982).random())
-        Activity.addActivity(a)
+        act.addActivity(a)
         return a
     }
-}

@@ -32,9 +32,6 @@ class ActivityClassifier(number:Int) {
         val result:DoubleArray = doubleArrayOf(ax.average(), ay.average(),az.average(),sx.standardDeviation(),sy.standardDeviation(),sz.standardDeviation())
         return result
     }
-    private fun classify(array:DoubleArray){
-
-    }
 
     fun List<Double>.average(): Double {
         return if (isEmpty()) 0.0 else sum() / size
@@ -62,8 +59,8 @@ class ActivityClassifier(number:Int) {
             var Lines = reader.readLine()
             while(Lines!=null && indx<size) {
                 //Log.e("Info", Lines.toString())
-                var ints: DoubleArray = DoubleArray(4)
-                var lineValues = Lines.split(',')
+                val ints: DoubleArray = DoubleArray(4)
+                val lineValues = Lines.split(',')
                 for (x in 2..5) {
                     //Log.e("Info", indx.toString())
                     if (lineValues.size==6)
@@ -83,8 +80,8 @@ class ActivityClassifier(number:Int) {
         val model=Model()
         val result=model.score(oneLine)
         val classes= arrayOf("Downstairs","Jogging","Sitting","Standing","Upstairs","Walking")
-        for(i in 0..5)
-            if(result[i]==1.0) classification=classes[i]
+        for(x in 0..5)
+            if(result[x]==1.0) classification=classes[x]
         return classification
     }
 
