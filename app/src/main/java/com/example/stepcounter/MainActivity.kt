@@ -8,6 +8,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -35,42 +38,52 @@ import kotlin.math.abs
 
 
 class MainActivity : ComponentActivity() {
+    lateinit var Activity:Activities
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { ChangeText(context = this)} }
+        setContent { MaterialTheme { ChangeText(context = this) } }
     }
-}
 
-@Composable
-fun Text(t:String){
-    Row{
-        androidx.compose.material3.Text(text =t )
-    }
-}
-
-@Composable
-fun ChangeText(context: Context) {
-    var text by remember { mutableStateOf("Click a button") }
-
-    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text)
-
-        Button(onClick = { text = count_Steps(context) }) {
-            Text("Count steps")
-        }
-        Button(onClick = { text = classify_Activity(context) }) {
-            Text("Classify a random Subject")
+    @Composable
+    fun Text(t: String) {
+        Row {
+            androidx.compose.material3.Text(text = t)
         }
     }
-}
+
+    @Composable
+    fun ChangeText(context: Context) {
+        var text by remember { mutableStateOf("Click a button") }
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text)
+
+            Button(onClick = { text = count_Steps(context) }) {
+                Text("Count steps")
+            }
+            Button(onClick = { text = classify_Activity(context) }) {
+                Text("Classify a random Subject")
+            }
+            LazyColumn() {
+                items(Activity.getActivities()){activity-> Text(activity)}
+            }
+        }
+    }
 
 
-fun count_Steps(context:Context):String{
-    val StepCounter=StepCounter()
-    return StepCounter.Convert(StepCounter.ReadRaw(context)).toString()
-}
-fun classify_Activity(context:Context):String{
-    val classifier=ActivityClassifier(100)
-    classifier.ReadRaw(context)
-    return classifier.Extract((0..10982).random())
+    fun count_Steps(context: Context): String {
+        val StepCounter = StepCounter()
+        return StepCounter.Convert(StepCounter.ReadRaw(context)).toString()
+    }
+
+    fun classify_Activity(context: Context): String {
+        val classifier = ActivityClassifier(100)
+        classifier.ReadRaw(context)
+        val a=classifier.Extract((0..10982).random())
+        Activity.addActivity(a)
+        return a
+    }
 }
