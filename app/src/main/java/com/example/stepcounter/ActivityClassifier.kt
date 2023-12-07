@@ -9,6 +9,7 @@ import kotlin.math.round
 
 class ActivityClassifier(number:Int) {
     lateinit var RawData:Array<DoubleArray>
+    var readalready:Boolean=false
 
     private fun extractFeatures(dataArray: Array<DoubleArray>): DoubleArray {
         val ax = mutableListOf<Double>()
@@ -44,34 +45,36 @@ class ActivityClassifier(number:Int) {
     }
 
     fun ReadRaw(context: Context) {
+            if(!readalready) {
+                val stream: InputStream = context.resources.openRawResource(R.raw.wsdm)
+                stream.reset()
+                val reader: BufferedReader = stream.bufferedReader()
+                var size: Int = 0
+                while (reader.readLine() != null) size += 1
+                stream.reset()
+                //Log.e("Info", "Found Lines: " +size.toString())
 
-            val stream: InputStream =context.resources.openRawResource(R.raw.wsdm)
-            stream.reset()
-            val reader: BufferedReader =stream.bufferedReader()
-            var size:Int=0
-            while(reader.readLine()!=null) size+=1
-            stream.reset()
-            //Log.e("Info", "Found Lines: " +size.toString())
 
-
-            val array: MutableList<DoubleArray> = mutableListOf<DoubleArray>()
-            var indx=0
-            var Lines = reader.readLine()
-            while(Lines!=null && indx<size) {
-                //Log.e("Info", Lines.toString())
-                val ints: DoubleArray = DoubleArray(4)
-                val lineValues = Lines.split(',')
-                for (x in 2..5) {
-                    //Log.e("Info", indx.toString())
-                    if (lineValues.size==6)
-                        if(lineValues[x]=="") ints[x-2]=0.0
-                        else ints[x-2] = lineValues[x].replace(';',' ').toDouble()
+                val array: MutableList<DoubleArray> = mutableListOf<DoubleArray>()
+                var indx = 0
+                var Lines = reader.readLine()
+                while (Lines != null && indx < size) {
+                    //Log.e("Info", Lines.toString())
+                    val ints: DoubleArray = DoubleArray(4)
+                    val lineValues = Lines.split(',')
+                    for (x in 2..5) {
+                        //Log.e("Info", indx.toString())
+                        if (lineValues.size == 6)
+                            if (lineValues[x] == "") ints[x - 2] = 0.0
+                            else ints[x - 2] = lineValues[x].replace(';', ' ').toDouble()
+                    }
+                    array.add(ints)
+                    indx += 1
+                    Lines = reader.readLine()
                 }
-                array.add(ints)
-                indx+=1
-                Lines = reader.readLine()
+                RawData = array.toTypedArray()
             }
-            RawData= array.toTypedArray()
+            readalready=true
         }
     fun Extract(indx:Int):String{
         val i=(indx*100)-1

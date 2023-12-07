@@ -21,9 +21,11 @@ class StepCounter {
     val ts = 1.25
     val res:Double = (fs / N)
     val ls:Int = (ts * fs).toInt();
+    var readalready:Boolean=false
+    lateinit var X:Array<DoubleArray>
 
 
-    public fun Convert(X: Array<DoubleArray>):Double{
+    public fun Convert():Double{
         var i =0
         var stepCount=0.0
         while (i + N < X.size) {
@@ -95,32 +97,35 @@ class StepCounter {
         return Iarray[array.indexOfFirst { v->v==array.min() }]
     }
 
-    public fun ReadRaw(context: Context):Array<DoubleArray> {
+    public fun ReadRaw(context: Context){
+        if(!readalready) {
+            val stream: InputStream = context.resources.openRawResource(R.raw.data)
+            stream.reset()
+            val reader: BufferedReader = stream.bufferedReader()
+            var size: Int = 0
+            while (reader.readLine() != null) size += 1
+            stream.reset()
+            //Log.e("Info", "Found Lines: " +size.toString())
 
-        val stream: InputStream =context.resources.openRawResource(R.raw.data)
-        stream.reset()
-        val reader: BufferedReader =stream.bufferedReader()
-        var size:Int=0
-        while(reader.readLine()!=null) size+=1
-        stream.reset()
-        //Log.e("Info", "Found Lines: " +size.toString())
 
-
-        val array: MutableList<DoubleArray> = mutableListOf<DoubleArray>()
-        var indx=0
-        var Lines = reader.readLine()
-        while(Lines!=null && indx<size) {
-            //Log.e("Info", Lines.toString())
-            var ints: DoubleArray = DoubleArray(4)
-            var lineValues = Lines.split(',')
-            for (x in 0..3) {
-                //Log.e("Info", indx.toString())
-                if (lineValues.isNotEmpty()) ints[x] = lineValues[x].toDouble()
+            val array: MutableList<DoubleArray> = mutableListOf<DoubleArray>()
+            var indx = 0
+            var Lines = reader.readLine()
+            while (Lines != null && indx < size) {
+                //Log.e("Info", Lines.toString())
+                var ints: DoubleArray = DoubleArray(4)
+                var lineValues = Lines.split(',')
+                for (x in 0..3) {
+                    //Log.e("Info", indx.toString())
+                    if (lineValues.isNotEmpty()) ints[x] = lineValues[x].toDouble()
+                }
+                array.add(ints)
+                indx += 1
+                Lines = reader.readLine()
             }
-            array.add(ints)
-            indx+=1
-            Lines = reader.readLine()
+            readalready=true
+            X= array.toTypedArray()
         }
-        return array.toTypedArray()
+
     }
 }

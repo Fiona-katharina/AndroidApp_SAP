@@ -77,7 +77,8 @@ class MainActivity : ComponentActivity() {
 
     fun count_Steps(context: Context): String {
         val StepCounter = StepCounter()
-        return StepCounter.Convert(StepCounter.ReadRaw(context)).toString()
+        StepCounter.ReadRaw(context)
+        return StepCounter.Convert().toString()
     }
 
     fun classify_Activity(context: Context, act:Activities): String {
